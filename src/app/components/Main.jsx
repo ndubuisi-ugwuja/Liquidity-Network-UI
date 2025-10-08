@@ -2,11 +2,12 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { toast } from "react-hot-toast";
-import { useAccount } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 import { contractAddresses, IWeth_abi, ERC20_abi, IPool_abi } from "../constants";
 
 export default function Main() {
-    const { address, connector, isConnected } = useAccount();
+    const { address, isConnected } = useAccount();
+    const { data: walletClient } = useWalletClient();
 
     const wethAddress = contractAddresses.wethTokenAddress;
     const aWethAddress = contractAddresses.aWethTokenAddress;
@@ -44,16 +45,17 @@ export default function Main() {
     // ✅ Get signer from RainbowKit/Wagmi connector
     useEffect(() => {
         const setupSigner = async () => {
-            if (connector && isConnected) {
-                const ethProvider = await connector.getProvider();
-                const ethersProvider = new ethers.BrowserProvider(ethProvider);
-                const signer = await ethersProvider.getSigner();
-                setProvider(ethersProvider);
-                setSigner(signer);
-            }
+            if (!walletClient || !isConnected) return;
+
+            const ethersProvider = new ethers.BrowserProvider(walletClient.transport);
+            const signer = await ethersProvider.getSigner();
+
+            setProvider(ethersProvider);
+            setSigner(signer);
         };
+
         setupSigner();
-    }, [connector, isConnected]);
+    }, [walletClient, isConnected]);
 
     // ✅ Fetch balances (ETH + WETH)
     const fetchBalances = async () => {
@@ -446,8 +448,8 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">USDT</span>
                             </div>
                             <div className="flex-col items-center justify-items-center">
-                                <p>4702</p>
-                                <p className="text-gray-500 text-sm">$4704.80</p>
+                                <p>0.00</p>
+                                <p className="text-gray-500 text-sm">$0.00</p>
                             </div>
                             <button className="w-22 h-8 bg-blue-950 text-white transition hover:bg-gray-500 rounded-lg">
                                 Repay
@@ -459,8 +461,8 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">LINK</span>
                             </div>
                             <div className="flex-col justify-items-center">
-                                <p>200</p>
-                                <p className="text-gray-500 text-sm">$7800</p>
+                                <p>0.00</p>
+                                <p className="text-gray-500 text-sm">$0.00</p>
                             </div>
                             <button className="w-22 h-8 bg-blue-950 text-white transition hover:bg-gray-500 rounded-lg">
                                 Repay
@@ -473,8 +475,8 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">USDT</span>
                             </div>
                             <div className="flex-col items-center justify-items-center">
-                                <p>150</p>
-                                <p className="text-gray-500 text-sm">$151.5</p>
+                                <p>0.00</p>
+                                <p className="text-gray-500 text-sm">$0.00</p>
                             </div>
                             {/* Trigger button */}
                             {!showFormBorrowUsdt && (
@@ -526,8 +528,8 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">LINK</span>
                             </div>
                             <div className="flex-col justify-items-center">
-                                <p>7.8</p>
-                                <p className="text-gray-500 text-sm">$132</p>
+                                <p>0.00</p>
+                                <p className="text-gray-500 text-sm">$0.00</p>
                             </div>
                             {/* Trigger button */}
                             {!showFormWithraw && (
