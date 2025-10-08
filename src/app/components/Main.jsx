@@ -279,7 +279,7 @@ export default function Main() {
                             </div>
                             <div className="flex-col justify-items-center">
                                 <p>{aWethBalance ? aWethBalance : "0.0000"}</p>
-                                <p className="text-gray-500 text-sm">$350</p>
+                                <p className="text-gray-500 text-sm">$0.00</p>
                             </div>
                             {/* Trigger button */}
                             {!showFormWithraw && (
@@ -333,7 +333,7 @@ export default function Main() {
                             </div>
                             <div className="flex-col justify-items-center">
                                 <p>{ethBalance ? ethBalance : "0.0000"}</p>
-                                <p className="text-gray-500 text-sm">$3900</p>
+                                <p className="text-gray-500 text-sm">$0.00</p>
                             </div>
 
                             {/* Trigger button */}
@@ -389,7 +389,7 @@ export default function Main() {
                             </div>
                             <div className="flex-col justify-items-center">
                                 <p>{wethBalance ? wethBalance : "0.0000"}</p>
-                                <p className="text-gray-500 text-sm">$5900</p>
+                                <p className="text-gray-500 text-sm">$0.00</p>
                             </div>
 
                             {/* Trigger button */}
