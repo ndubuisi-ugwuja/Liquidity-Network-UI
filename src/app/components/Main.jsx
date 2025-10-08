@@ -263,7 +263,7 @@ export default function Main() {
                     </div>
                     <div>
                         <p className="text-gray-700">Health factor</p>
-                        <p className="font-semibold text-xl">1.67</p>
+                        <p className="font-semibold text-xl">0.00</p>
                     </div>
                 </div>
             </div>
