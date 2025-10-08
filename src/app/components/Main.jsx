@@ -534,7 +534,7 @@ export default function Main() {
                             {/* Trigger button */}
                             {!showFormWithraw && (
                                 <button
-                                    onClick={() => setShowFormWithraw(true)}
+                                    onClick={() => setShowFormBorrowUsdt(true)}
                                     className="w-22 h-8 bg-blue-950 text-white transition hover:bg-gray-500 rounded-lg"
                                 >
                                     Borrow
@@ -545,10 +545,10 @@ export default function Main() {
                             {showFormBorrowUsdt && (
                                 <div className="fixed inset-0 flex items-center justify-center backdrop-blur-[3px]">
                                     <div className="p-6 rounded-2xl shadow-md bg-white max-w-sm w-full">
-                                        <h2 className="text-lg font-semibold mb-2">Borrow USDT</h2>
+                                        <h2 className="text-lg font-semibold mb-2">Borrow Link</h2>
 
                                         <input
-                                            placeholder="Enter USDT amount"
+                                            placeholder="Enter Link amount"
                                             value={amountBorrowUsdt}
                                             onChange={(e) => setAmountBorrowUsdt(e.target.value)}
                                             className="w-full border border-gray-300 rounded-lg p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-950"
@@ -556,7 +556,7 @@ export default function Main() {
 
                                         <div className="flex gap-2">
                                             <button
-                                                onClick={handleBorrowUsdt}
+                                                //onClick={handleBorrowUsdt}
                                                 disabled={!amountBorrowUsdt || stepBorrowUsdt !== "idle"}
                                                 className="w-22 h-8 bg-blue-950 transition hover:bg-gray-500  text-white rounded-lg shadow disabled:opacity-50"
                                             >
