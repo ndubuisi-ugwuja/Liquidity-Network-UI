@@ -24,7 +24,7 @@ export default function Main() {
     const [userTotalColletaral, setUserTotalColletaral] = useState("0");
     const [userTotalDept, setUserTotalDept] = useState("0");
     const [userAvailableBorrows, setUserAvailableBorrows] = useState("0");
-    const [userHealthFactor, setUserHealthFactor] = useState("0");
+    let [userHealthFactor, setUserHealthFactor] = useState("0");
 
     const [amountEth, setAmountEth] = useState("");
     const [stepEth, setStepEth] = useState("idle");
@@ -89,10 +89,10 @@ export default function Main() {
             const pool = new ethers.Contract(poolAddress, IPool_abi.abi, provider);
             const userData = await pool.getUserAccountData(address);
 
-            setUserTotalColletaral(ethers.formatEther(userData.totalCollateralBase));
-            setUserTotalDept(ethers.formatEther(userData.totalDebtBase));
-            setUserAvailableBorrows(ethers.formatEther(userData.availableBorrowsBase));
-            setUserHealthFactor(ethers.formatEther(userData.healthFactor));
+            setUserTotalColletaral(ethers.formatUnits(userData.totalCollateralBase, 8));
+            setUserTotalDept(ethers.formatUnits(userData.totalDebtBase, 8));
+            setUserAvailableBorrows(ethers.formatUnits(userData.availableBorrowsBase, 8));
+            setUserHealthFactor(ethers.formatUnits(userData.healthFactor, 8));
 
             console.log("User data:", {
                 collateral: userData.totalCollateralBase,
@@ -259,11 +259,21 @@ export default function Main() {
                 <div className="flex gap-5 pt-3">
                     <div>
                         <p className="text-gray-700">Net worth</p>
-                        <p className="font-semibold text-xl">{aWethBalance ? aWethBalance : "0.0000"} WETH</p>
+                        <p className="font-semibold text-xl">
+                            ${userTotalColletaral ? Number(userTotalColletaral).toFixed(2) : "0.0000"}{" "}
+                        </p>
                     </div>
                     <div>
                         <p className="text-gray-700">Health factor</p>
-                        <p className="font-semibold text-xl">0.00</p>
+                        <p className="font-semibold text-xl">
+                            {
+                                (userHealthFactor = BigInt(
+                                    "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                                )
+                                    ? "∞"
+                                    : Number(userHealthFactor).toFixed(2))
+                            }
+                        </p>
                     </div>
                 </div>
             </div>
@@ -278,8 +288,8 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">WETH</span>
                             </div>
                             <div className="flex-col justify-items-center">
-                                <p>{aWethBalance ? aWethBalance : "0.0000"}</p>
-                                <p className="text-gray-500 text-sm">$0.00</p>
+                                <p>{aWethBalance ? Number(aWethBalance).toFixed(2) : "0.0000"}</p>
+                                <p className="text-gray-500 text-sm">${Number(userTotalColletaral).toFixed(2)}</p>
                             </div>
                             {/* Trigger button */}
                             {!showFormWithraw && (
@@ -332,7 +342,7 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-1">ETH</span>
                             </div>
                             <div className="flex-col justify-items-center">
-                                <p>{ethBalance ? ethBalance : "0.0000"}</p>
+                                <p>{ethBalance ? Number(ethBalance).toFixed(2) : "0.0000"}</p>
                                 <p className="text-gray-500 text-sm">$0.00</p>
                             </div>
 
@@ -388,7 +398,7 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">WETH</span>
                             </div>
                             <div className="flex-col justify-items-center">
-                                <p>{wethBalance ? wethBalance : "0.0000"}</p>
+                                <p>{wethBalance ? Number(wethBalance).toFixed(2) : "0.0000"}</p>
                                 <p className="text-gray-500 text-sm">$0.00</p>
                             </div>
 
@@ -475,8 +485,8 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">USDT</span>
                             </div>
                             <div className="flex-col items-center justify-items-center">
-                                <p>0.00</p>
-                                <p className="text-gray-500 text-sm">$0.00</p>
+                                <p>{Number(userAvailableBorrows).toFixed(2)}</p>
+                                <p className="text-gray-500 text-sm">${Number(userAvailableBorrows).toFixed(2)}</p>
                             </div>
                             {/* Trigger button */}
                             {!showFormBorrowUsdt && (
@@ -529,7 +539,7 @@ export default function Main() {
                             </div>
                             <div className="flex-col justify-items-center">
                                 <p>0.00</p>
-                                <p className="text-gray-500 text-sm">$0.00</p>
+                                <p className="text-gray-500 text-sm">${Number(userAvailableBorrows).toFixed(2)}</p>
                             </div>
                             {/* Trigger button */}
                             {!showFormWithraw && (
@@ -556,7 +566,7 @@ export default function Main() {
 
                                         <div className="flex gap-2">
                                             <button
-                                                //onClick={handleBorrowUsdt}
+                                                onClick={handleBorrowUsdt}
                                                 disabled={!amountBorrowUsdt || stepBorrowUsdt !== "idle"}
                                                 className="w-22 h-8 bg-blue-950 transition hover:bg-gray-500  text-white rounded-lg shadow disabled:opacity-50"
                                             >
