@@ -14,12 +14,16 @@ export default function Main() {
     const poolAddress = contractAddresses.poolAddress;
     const usdcAddress = contractAddresses.usdcTokenAddress;
     const linkAddress = contractAddresses.linkTokenAddress;
+    const linkDeptAddress = contractAddresses.linkDeptTokenAddress;
+    const usdcDeptAddress = contractAddresses.usdcDeptTokenAddress;
 
     const [provider, setProvider] = useState(null);
     const [signer, setSigner] = useState(null);
     const [ethBalance, setEthBalance] = useState("0");
     const [wethBalance, setWethBalance] = useState("0");
     const [aWethBalance, setAWethBalance] = useState("0");
+    const [linkDeptBalance, setLinkDeptBalance] = useState("0");
+    const [usdcDeptBalance, setUsdcDeptBalance] = useState("0");
 
     const [userTotalColletaral, setUserTotalColletaral] = useState("0");
     const [userTotalDept, setUserTotalDept] = useState("0");
@@ -80,6 +84,14 @@ export default function Main() {
             const wethContract = new ethers.Contract(wethAddress, ERC20_abi.abi, provider);
             const wethBal = await wethContract.balanceOf(address);
             setWethBalance(ethers.formatEther(wethBal));
+
+            const linkContract = new ethers.Contract(linkDeptAddress, ERC20_abi.abi, provider);
+            const linkDeptBal = await linkContract.balanceOf(address);
+            setLinkDeptBalance(ethers.formatEther(linkDeptBal));
+
+            const usdcContract = new ethers.Contract(usdcDeptAddress, ERC20_abi.abi, provider);
+            const usdcDeptBal = await usdcContract.balanceOf(address);
+            setUsdcDeptBalance(ethers.formatEther(usdcDeptBal));
         } catch (err) {
             console.error("Error fetching balances:", err);
         }
@@ -241,7 +253,7 @@ export default function Main() {
             setStepBorrowUsdc("borrowing");
             toast.loading("Borrowing USDC...");
             const pool = new ethers.Contract(poolAddress, IPool_abi.abi, signer);
-            const borrowTx = await pool.borrow(usdcAddress, usdcAmount, 1, 0, address);
+            const borrowTx = await pool.borrow(usdcAddress, usdcAmount, 2, 0, address);
             await borrowTx.wait(1);
 
             toast.dismiss();
@@ -326,7 +338,8 @@ export default function Main() {
                     <div>
                         <p className="text-gray-700">Net worth</p>
                         <p className="font-semibold text-xl">
-                            ${userTotalColletaral ? Number(userTotalColletaral).toFixed(2) : "0.00"}{" "}
+                            $
+                            {userTotalColletaral ? Number(userTotalColletaral - userTotalDept).toFixed(2) : "0.00"}{" "}
                         </p>
                     </div>
                     <div>
@@ -403,7 +416,7 @@ export default function Main() {
                             </div>
                             <div className="flex-col justify-items-center">
                                 <p>{ethBalance ? Number(ethBalance).toFixed(2) : "0.0000"}</p>
-                                <p className="text-gray-500 text-sm">$0.00</p>
+                                <p className="text-gray-500 text-sm">${Number(ethBalance * 4000).toFixed(2)}</p>
                             </div>
 
                             {/* Trigger button */}
@@ -459,7 +472,7 @@ export default function Main() {
                             </div>
                             <div className="flex-col justify-items-center">
                                 <p>{wethBalance ? Number(wethBalance).toFixed(2) : "0.0000"}</p>
-                                <p className="text-gray-500 text-sm">$0.00</p>
+                                <p className="text-gray-500 text-sm">${Number(wethBalance * 4000).toFixed(2)}</p>
                             </div>
 
                             {/* Trigger button */}
@@ -531,7 +544,7 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">LINK</span>
                             </div>
                             <div className="flex-col justify-items-center">
-                                <p>0.00</p>
+                                <p>{linkDeptBalance ? Number(linkDeptBalance).toFixed(2) : "0.00"}</p>
                                 <p className="text-gray-500 text-sm">${Number(userTotalDept).toFixed(2)}</p>
                             </div>
                             {/* Trigger button */}
@@ -638,7 +651,7 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">LINK</span>
                             </div>
                             <div className="flex-col justify-items-center">
-                                <p>0.00</p>
+                                <p>{Number(userAvailableBorrows / 30).toFixed(2)}</p>
                                 <p className="text-gray-500 text-sm">${Number(userAvailableBorrows).toFixed(2)}</p>
                             </div>
                             {/* Trigger button */}
