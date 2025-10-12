@@ -12,7 +12,7 @@ export default function Main() {
     const wethAddress = contractAddresses.wethTokenAddress;
     const aWethAddress = contractAddresses.aWethTokenAddress;
     const poolAddress = contractAddresses.poolAddress;
-    const usdtAddress = contractAddresses.usdtTokenAddress;
+    const usdcAddress = contractAddresses.usdcTokenAddress;
     const linkAddress = contractAddresses.linkTokenAddress;
 
     const [provider, setProvider] = useState(null);
@@ -24,7 +24,7 @@ export default function Main() {
     const [userTotalColletaral, setUserTotalColletaral] = useState("0");
     const [userTotalDept, setUserTotalDept] = useState("0");
     const [userAvailableBorrows, setUserAvailableBorrows] = useState("0");
-    let [userHealthFactor, setUserHealthFactor] = useState("0");
+    const [userHealthFactor, setUserHealthFactor] = useState("0");
 
     const [amountEth, setAmountEth] = useState("");
     const [stepEth, setStepEth] = useState("idle");
@@ -38,9 +38,17 @@ export default function Main() {
     const [stepWithraw, setStepWithraw] = useState("idle");
     const [showFormWithraw, setShowFormWithraw] = useState(false); // 👈 trigger state for withdrawal
 
-    const [amountBorrowUsdt, setAmountBorrowUsdt] = useState("");
-    const [stepBorrowUsdt, setStepBorrowUsdt] = useState("idle");
-    const [showFormBorrowUsdt, setShowFormBorrowUsdt] = useState(false); // 👈 trigger state for USDT borrow
+    const [amountBorrowUsdc, setAmountBorrowUsdc] = useState("");
+    const [stepBorrowUsdc, setStepBorrowUsdc] = useState("idle");
+    const [showFormBorrowUsdc, setShowFormBorrowUsdc] = useState(false); // 👈 trigger state for USDC borrow
+
+    const [amountBorrowLink, setAmountBorrowLink] = useState("");
+    const [stepBorrowLink, setStepBorrowLink] = useState("idle");
+    const [showFormBorrowLink, setShowFormBorrowLink] = useState(false); // 👈 trigger state for LINK borrow
+
+    const [amountRepayLink, setAmountRepayLink] = useState("");
+    const [stepRepayLink, setStepRepayLink] = useState("idle");
+    const [showFormRepayLink, setShowFormRepayLink] = useState(false); // 👈 trigger state for LINK repay
 
     // ✅ Get signer from RainbowKit/Wagmi connector
     useEffect(() => {
@@ -92,7 +100,7 @@ export default function Main() {
             setUserTotalColletaral(ethers.formatUnits(userData.totalCollateralBase, 8));
             setUserTotalDept(ethers.formatUnits(userData.totalDebtBase, 8));
             setUserAvailableBorrows(ethers.formatUnits(userData.availableBorrowsBase, 8));
-            setUserHealthFactor(ethers.formatUnits(userData.healthFactor, 8));
+            setUserHealthFactor(ethers.formatUnits(userData.healthFactor, 18));
 
             console.log("User data:", {
                 collateral: userData.totalCollateralBase,
@@ -221,31 +229,89 @@ export default function Main() {
         }
     };
 
-    // ✅Borrow USDT
-    const handleBorrowUsdt = async () => {
+    // ✅Borrow USDC
+    const handleBorrowUsdc = async () => {
         if (!signer) return toast.error("Wallet not connected");
-        if (!amountBorrowUsdt) return toast.error("Enter an amount");
+        if (!amountBorrowUsdc) return toast.error("Enter an amount");
 
-        const usdtAmount = ethers.parseEther(amountBorrowUsdt);
+        const usdcAmount = ethers.parseEther(amountBorrowUsdc);
 
         // Borrow
         try {
-            setStepBorrowUsdt("borrowing");
-            toast.loading("Borrowing USDT...");
+            setStepBorrowUsdc("borrowing");
+            toast.loading("Borrowing USDC...");
             const pool = new ethers.Contract(poolAddress, IPool_abi.abi, signer);
-            const borrowTx = await pool.borrow(usdtAddress, usdtAmount, 2, 0, address);
+            const borrowTx = await pool.borrow(usdcAddress, usdcAmount, 1, 0, address);
             await borrowTx.wait(1);
 
             toast.dismiss();
             toast.success("Borrow successful");
-            setStepBorrowUsdt("idle");
-            setAmountBorrowUsdt("");
+            setStepBorrowUsdc("idle");
+            setAmountBorrowUsdc("");
             fetchBalances();
         } catch (err) {
             console.log("Borrow failed:", err);
             toast.dismiss();
             toast.error("Transaction failed");
-            setStepBorrowUsdt("idle");
+            setStepBorrowUsdc("idle");
+        }
+    };
+
+    // ✅Borrow LINK
+    const handleBorrowLink = async () => {
+        if (!signer) return toast.error("Wallet not connected");
+        if (!amountBorrowLink) return toast.error("Enter an amount");
+
+        const linkAmount = ethers.parseEther(amountBorrowLink);
+
+        // Borrow
+        try {
+            setStepBorrowLink("borrowing");
+            toast.loading("Borrowing LINK...");
+            const pool = new ethers.Contract(poolAddress, IPool_abi.abi, signer);
+            const borrowTx = await pool.borrow(linkAddress, linkAmount, 2, 0, address);
+            await borrowTx.wait(1);
+
+            toast.dismiss();
+            toast.success("Borrow successful");
+            setStepBorrowLink("idle");
+            setAmountBorrowLink("");
+            fetchBalances();
+            fetchUserData();
+        } catch (err) {
+            console.log("Borrow failed:", err);
+            toast.dismiss();
+            toast.error("Transaction failed");
+            setStepBorrowLink("idle");
+        }
+    };
+
+    // ✅Repay LINK
+    const handleRepayLink = async () => {
+        if (!signer) return toast.error("Wallet not connected");
+        if (!amountRepayLink) return toast.error("Enter an amount");
+
+        const linkAmount = ethers.parseEther(amountRepayLink);
+
+        // Repay
+        try {
+            setStepRepayLink("repaying");
+            toast.loading("Repaying LINK...");
+            const pool = new ethers.Contract(poolAddress, IPool_abi.abi, signer);
+            const repayTx = await pool.repay(linkAddress, linkAmount, 2, address);
+            await repayTx.wait(1);
+
+            toast.dismiss();
+            toast.success("Repay successful!");
+            setStepRepayLink("idle");
+            setAmountRepayLink("");
+            fetchBalances();
+            fetchUserData();
+        } catch (err) {
+            console.log("Repay failed:", err);
+            toast.dismiss();
+            toast.error("Transaction failed");
+            setStepRepayLink("idle");
         }
     };
 
@@ -260,19 +326,13 @@ export default function Main() {
                     <div>
                         <p className="text-gray-700">Net worth</p>
                         <p className="font-semibold text-xl">
-                            ${userTotalColletaral ? Number(userTotalColletaral).toFixed(2) : "0.0000"}{" "}
+                            ${userTotalColletaral ? Number(userTotalColletaral).toFixed(2) : "0.00"}{" "}
                         </p>
                     </div>
                     <div>
                         <p className="text-gray-700">Health factor</p>
                         <p className="font-semibold text-xl">
-                            {
-                                (userHealthFactor = BigInt(
-                                    "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-                                )
-                                    ? "∞"
-                                    : Number(userHealthFactor).toFixed(2))
-                            }
+                            {userTotalDept > 0 ? Number(userHealthFactor).toFixed(2) : "∞"}
                         </p>
                     </div>
                 </div>
@@ -454,8 +514,8 @@ export default function Main() {
                         <p className="font-semibold text-center text-lg">Your borrows</p>
                         <div className="flex justify-between items-center pt-5">
                             <div className="">
-                                <img src="usdt.png" alt="Eth logo" width={25} className="inline-block" />
-                                <span className="inline-block align-middle text-sm font-semibold ml-2">USDT</span>
+                                <img src="usdc.png" alt="Eth logo" width={25} className="inline-block" />
+                                <span className="inline-block align-middle text-sm font-semibold ml-2">USDC</span>
                             </div>
                             <div className="flex-col items-center justify-items-center">
                                 <p>0.00</p>
@@ -472,26 +532,66 @@ export default function Main() {
                             </div>
                             <div className="flex-col justify-items-center">
                                 <p>0.00</p>
-                                <p className="text-gray-500 text-sm">$0.00</p>
+                                <p className="text-gray-500 text-sm">${Number(userTotalDept).toFixed(2)}</p>
                             </div>
-                            <button className="w-22 h-8 bg-blue-950 text-white transition hover:bg-gray-500 rounded-lg">
-                                Repay
-                            </button>
+                            {/* Trigger button */}
+                            {!showFormRepayLink && (
+                                <button
+                                    onClick={() => setShowFormRepayLink(true)}
+                                    className="w-22 h-8 bg-blue-950 text-white transition hover:bg-gray-500 rounded-lg"
+                                >
+                                    Repay
+                                </button>
+                            )}
+
+                            {/* The section only shows after button is clicked */}
+                            {showFormRepayLink && (
+                                <div className="fixed inset-0 flex items-center justify-center backdrop-blur-[3px]">
+                                    <div className="p-6 rounded-2xl shadow-md bg-white max-w-sm w-full">
+                                        <h2 className="text-lg font-semibold mb-2">Repay Link</h2>
+
+                                        <input
+                                            placeholder="Enter Link amount"
+                                            value={amountRepayLink}
+                                            onChange={(e) => setAmountRepayLink(e.target.value)}
+                                            className="w-full border border-gray-300 rounded-lg p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-950"
+                                        />
+
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={handleRepayLink}
+                                                disabled={!amountRepayLink || stepRepayLink !== "idle"}
+                                                className="w-22 h-8 bg-blue-950 transition hover:bg-gray-500  text-white rounded-lg shadow disabled:opacity-50"
+                                            >
+                                                {stepRepayLink === "repaying" && "Repaying..."}
+                                                {stepRepayLink === "idle" && "Repay"}
+                                            </button>
+
+                                            <button
+                                                onClick={() => setShowFormRepayLink(false)}
+                                                className="w-22 h-8 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         <p className="font-semibold text-center text-lg pt-5">Assets to borrow</p>
                         <div className="flex justify-between items-center pt-5">
                             <div className="">
-                                <img src="usdt.png" alt="Eth logo" width={25} className="inline-block" />
-                                <span className="inline-block align-middle text-sm font-semibold ml-2">USDT</span>
+                                <img src="usdc.png" alt="Eth logo" width={25} className="inline-block" />
+                                <span className="inline-block align-middle text-sm font-semibold ml-2">USDC</span>
                             </div>
                             <div className="flex-col items-center justify-items-center">
                                 <p>{Number(userAvailableBorrows).toFixed(2)}</p>
                                 <p className="text-gray-500 text-sm">${Number(userAvailableBorrows).toFixed(2)}</p>
                             </div>
                             {/* Trigger button */}
-                            {!showFormBorrowUsdt && (
+                            {!showFormBorrowUsdc && (
                                 <button
-                                    onClick={() => setShowFormBorrowUsdt(true)}
+                                    onClick={() => setShowFormBorrowUsdc(true)}
                                     className="w-22 h-8 bg-blue-950 text-white transition hover:bg-gray-500 rounded-lg"
                                 >
                                     Borrow
@@ -499,30 +599,30 @@ export default function Main() {
                             )}
 
                             {/* The section only shows after button is clicked */}
-                            {showFormBorrowUsdt && (
+                            {showFormBorrowUsdc && (
                                 <div className="fixed inset-0 flex items-center justify-center backdrop-blur-[3px]">
                                     <div className="p-6 rounded-2xl shadow-md bg-white max-w-sm w-full">
-                                        <h2 className="text-lg font-semibold mb-2">Borrow USDT</h2>
+                                        <h2 className="text-lg font-semibold mb-2">Borrow USDC</h2>
 
                                         <input
-                                            placeholder="Enter USDT amount"
-                                            value={amountBorrowUsdt}
-                                            onChange={(e) => setAmountBorrowUsdt(e.target.value)}
+                                            placeholder="Enter USDC amount"
+                                            value={amountBorrowUsdc}
+                                            onChange={(e) => setAmountBorrowUsdc(e.target.value)}
                                             className="w-full border border-gray-300 rounded-lg p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-950"
                                         />
 
                                         <div className="flex gap-2">
                                             <button
-                                                onClick={handleBorrowUsdt}
-                                                disabled={!amountBorrowUsdt || stepBorrowUsdt !== "idle"}
+                                                onClick={handleBorrowUsdc}
+                                                disabled={!amountBorrowUsdc || stepBorrowUsdc !== "idle"}
                                                 className="w-22 h-8 bg-blue-950 transition hover:bg-gray-500  text-white rounded-lg shadow disabled:opacity-50"
                                             >
-                                                {stepBorrowUsdt === "borrowing" && "Borrowing..."}
-                                                {stepBorrowUsdt === "idle" && "Borrow"}
+                                                {stepBorrowUsdc === "borrowing" && "Borrowing..."}
+                                                {stepBorrowUsdc === "idle" && "Borrow"}
                                             </button>
 
                                             <button
-                                                onClick={() => setShowFormBorrowUsdt(false)}
+                                                onClick={() => setShowFormBorrowUsdc(false)}
                                                 className="w-22 h-8 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
                                             >
                                                 Cancel
@@ -542,9 +642,9 @@ export default function Main() {
                                 <p className="text-gray-500 text-sm">${Number(userAvailableBorrows).toFixed(2)}</p>
                             </div>
                             {/* Trigger button */}
-                            {!showFormWithraw && (
+                            {!showFormBorrowLink && (
                                 <button
-                                    onClick={() => setShowFormBorrowUsdt(true)}
+                                    onClick={() => setShowFormBorrowLink(true)}
                                     className="w-22 h-8 bg-blue-950 text-white transition hover:bg-gray-500 rounded-lg"
                                 >
                                     Borrow
@@ -552,30 +652,30 @@ export default function Main() {
                             )}
 
                             {/* The section only shows after button is clicked */}
-                            {showFormBorrowUsdt && (
+                            {showFormBorrowLink && (
                                 <div className="fixed inset-0 flex items-center justify-center backdrop-blur-[3px]">
                                     <div className="p-6 rounded-2xl shadow-md bg-white max-w-sm w-full">
                                         <h2 className="text-lg font-semibold mb-2">Borrow Link</h2>
 
                                         <input
                                             placeholder="Enter Link amount"
-                                            value={amountBorrowUsdt}
-                                            onChange={(e) => setAmountBorrowUsdt(e.target.value)}
+                                            value={amountBorrowLink}
+                                            onChange={(e) => setAmountBorrowLink(e.target.value)}
                                             className="w-full border border-gray-300 rounded-lg p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-950"
                                         />
 
                                         <div className="flex gap-2">
                                             <button
-                                                onClick={handleBorrowUsdt}
-                                                disabled={!amountBorrowUsdt || stepBorrowUsdt !== "idle"}
+                                                onClick={handleBorrowLink}
+                                                disabled={!amountBorrowLink || stepBorrowLink !== "idle"}
                                                 className="w-22 h-8 bg-blue-950 transition hover:bg-gray-500  text-white rounded-lg shadow disabled:opacity-50"
                                             >
-                                                {stepBorrowUsdt === "borrowing" && "Borrowing..."}
-                                                {stepBorrowUsdt === "idle" && "Borrow"}
+                                                {stepBorrowLink === "borrowing" && "Borrowing..."}
+                                                {stepBorrowLink === "idle" && "Borrow"}
                                             </button>
 
                                             <button
-                                                onClick={() => setShowFormBorrowUsdt(false)}
+                                                onClick={() => setShowFormBorrowLink(false)}
                                                 className="w-22 h-8 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
                                             >
                                                 Cancel
