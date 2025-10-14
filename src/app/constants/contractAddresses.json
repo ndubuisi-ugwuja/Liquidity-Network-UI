@@ -1,10 +1,9 @@
 {
     "wethTokenAddress": "0xC558DBdd856501FCd9aaF1E62eae57A9F0629a3c",
     "aWethTokenAddress": "0x5b071b590a59395fE4025A0Ccc1FcC931AAc1830",
-    "providerAddress": "0x012bAC54348C0E635dCAc9D5FB99f06F24136C9A",
     "poolAddress": "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951",
     "usdcTokenAddress": "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
+    "usdcDeptTokenAddress": "0x36B5dE936eF1710E1d22EabE5231b28581a92ECc",
     "linkTokenAddress": "0xf8Fb3713D459D7C1018BD0A49D19b4C44290EBE5",
-    "linkDeptTokenAddress": "0x34a4d932E722b9dFb492B9D8131127690CE2430B",
-    "usdcDeptTokenAddress": "0x36B5dE936eF1710E1d22EabE5231b28581a92ECc"
+    "linkDeptTokenAddress": "0x34a4d932E722b9dFb492B9D8131127690CE2430B"
 }

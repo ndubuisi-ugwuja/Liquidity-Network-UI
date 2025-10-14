@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { toast } from "react-hot-toast";
 import { useAccount, useWalletClient } from "wagmi";
-import { contractAddresses, IWeth_abi, ERC20_abi, IPool_abi } from "../constants";
+import { contractAddresses, IWeth_abi, IERC20_abi, IPool_abi } from "../constants";
 
 export default function Main() {
     const { address, isConnected } = useAccount();
@@ -13,9 +13,9 @@ export default function Main() {
     const aWethAddress = contractAddresses.aWethTokenAddress;
     const poolAddress = contractAddresses.poolAddress;
     const usdcAddress = contractAddresses.usdcTokenAddress;
+    const usdcDeptAddress = contractAddresses.usdcDeptTokenAddress;
     const linkAddress = contractAddresses.linkTokenAddress;
     const linkDeptAddress = contractAddresses.linkDeptTokenAddress;
-    const usdcDeptAddress = contractAddresses.usdcDeptTokenAddress;
 
     const [provider, setProvider] = useState(null);
     const [signer, setSigner] = useState(null);
@@ -32,29 +32,33 @@ export default function Main() {
 
     const [amountEth, setAmountEth] = useState("");
     const [stepEth, setStepEth] = useState("idle");
-    const [showFormEth, setShowFormEth] = useState(false); // 👈 trigger state for ETH deposite
+    const [showFormEth, setShowFormEth] = useState(false); // trigger state for ETH deposit
 
     const [amountWeth, setAmountWeth] = useState("");
     const [stepWeth, setStepWeth] = useState("idle");
-    const [showFormWeth, setShowFormWeth] = useState(false); // 👈 trigger state for WETH deposite
+    const [showFormWeth, setShowFormWeth] = useState(false); // trigger state for WETH deposit
 
     const [amountWithraw, setAmountWithraw] = useState("");
     const [stepWithraw, setStepWithraw] = useState("idle");
-    const [showFormWithraw, setShowFormWithraw] = useState(false); // 👈 trigger state for withdrawal
+    const [showFormWithraw, setShowFormWithraw] = useState(false); // trigger state for withdrawal
 
     const [amountBorrowUsdc, setAmountBorrowUsdc] = useState("");
     const [stepBorrowUsdc, setStepBorrowUsdc] = useState("idle");
-    const [showFormBorrowUsdc, setShowFormBorrowUsdc] = useState(false); // 👈 trigger state for USDC borrow
+    const [showFormBorrowUsdc, setShowFormBorrowUsdc] = useState(false); // trigger state for Usdc borrow
+
+    const [amountRepayUsdc, setAmountRepayUsdc] = useState("");
+    const [stepRepayUsdc, setStepRepayUsdc] = useState("idle");
+    const [showFormRepayUsdc, setShowFormRepayUsdc] = useState(false); // trigger state for Usdc repay
 
     const [amountBorrowLink, setAmountBorrowLink] = useState("");
     const [stepBorrowLink, setStepBorrowLink] = useState("idle");
-    const [showFormBorrowLink, setShowFormBorrowLink] = useState(false); // 👈 trigger state for LINK borrow
+    const [showFormBorrowLink, setShowFormBorrowLink] = useState(false); // trigger state for LINK borrow
 
     const [amountRepayLink, setAmountRepayLink] = useState("");
     const [stepRepayLink, setStepRepayLink] = useState("idle");
-    const [showFormRepayLink, setShowFormRepayLink] = useState(false); // 👈 trigger state for LINK repay
+    const [showFormRepayLink, setShowFormRepayLink] = useState(false); // trigger state for LINK repay
 
-    // ✅ Get signer from RainbowKit/Wagmi connector
+    // Get signer from RainbowKit/Wagmi connector
     useEffect(() => {
         const setupSigner = async () => {
             if (!walletClient || !isConnected) return;
@@ -69,7 +73,7 @@ export default function Main() {
         setupSigner();
     }, [walletClient, isConnected]);
 
-    // ✅ Fetch balances (ETH + WETH)
+    // Fetch balances (ETH + WETH)
     const fetchBalances = async () => {
         if (!provider || !address) return;
 
@@ -77,19 +81,19 @@ export default function Main() {
             const ethBal = await provider.getBalance(address);
             setEthBalance(ethers.formatEther(ethBal));
 
-            const aWethContract = new ethers.Contract(aWethAddress, ERC20_abi.abi, provider);
+            const aWethContract = new ethers.Contract(aWethAddress, IERC20_abi.abi, provider);
             const aWethBal = await aWethContract.balanceOf(address);
             setAWethBalance(ethers.formatEther(aWethBal));
 
-            const wethContract = new ethers.Contract(wethAddress, ERC20_abi.abi, provider);
+            const wethContract = new ethers.Contract(wethAddress, IERC20_abi.abi, provider);
             const wethBal = await wethContract.balanceOf(address);
             setWethBalance(ethers.formatEther(wethBal));
 
-            const linkContract = new ethers.Contract(linkDeptAddress, ERC20_abi.abi, provider);
+            const linkContract = new ethers.Contract(linkDeptAddress, IERC20_abi.abi, provider);
             const linkDeptBal = await linkContract.balanceOf(address);
             setLinkDeptBalance(ethers.formatEther(linkDeptBal));
 
-            const usdcContract = new ethers.Contract(usdcDeptAddress, ERC20_abi.abi, provider);
+            const usdcContract = new ethers.Contract(usdcDeptAddress, IERC20_abi.abi, provider);
             const usdcDeptBal = await usdcContract.balanceOf(address);
             setUsdcDeptBalance(ethers.formatEther(usdcDeptBal));
         } catch (err) {
@@ -101,7 +105,7 @@ export default function Main() {
         fetchBalances();
     }, [provider, address]);
 
-    // ✅ Fetch user data
+    // Fetch user data
     const fetchUserData = async () => {
         if (!provider || !address) return;
 
@@ -113,13 +117,6 @@ export default function Main() {
             setUserTotalDept(ethers.formatUnits(userData.totalDebtBase, 8));
             setUserAvailableBorrows(ethers.formatUnits(userData.availableBorrowsBase, 8));
             setUserHealthFactor(ethers.formatUnits(userData.healthFactor, 18));
-
-            console.log("User data:", {
-                collateral: userData.totalCollateralBase,
-                debt: userData.totalDebtBase,
-                available: userData.availableBorrowsBase,
-                health: userData.healthFactor,
-            });
         } catch (err) {
             console.error("Error fetching user data:", err);
         }
@@ -129,7 +126,7 @@ export default function Main() {
         fetchUserData();
     }, [provider, address]);
 
-    // ✅ Supply logic using ethers.js
+    // Supply logic using ethers.js
     const handleSupplyEth = async () => {
         if (!signer) return toast.error("Wallet not connected");
         if (!amountEth) return toast.error("Enter an amount");
@@ -137,7 +134,7 @@ export default function Main() {
         const weiAmount = ethers.parseEther(amountEth);
 
         try {
-            // 1️⃣ Wrap ETH into WETH
+            // Wrap ETH into WETH
             setStepEth("depositing");
             toast.loading("Wrapping ETH into WETH...");
             const weth = new ethers.Contract(wethAddress, IWeth_abi.abi, signer);
@@ -146,7 +143,7 @@ export default function Main() {
             toast.dismiss();
             toast.success("ETH wrapped");
 
-            // 2️⃣ Approve Aave pool
+            // Approve Aave pool
             setStepEth("approving");
             toast.loading("Approving Aave Pool...");
             const approveTx = await weth.approve(poolAddress, weiAmount);
@@ -154,7 +151,7 @@ export default function Main() {
             toast.dismiss();
             toast.success("Approval successful");
 
-            // 3️⃣ Supply to Aave
+            // Supply to Aave
             setStepEth("supplying");
             toast.loading("Supplying to Aave...");
             const pool = new ethers.Contract(poolAddress, IPool_abi.abi, signer);
@@ -175,7 +172,7 @@ export default function Main() {
         }
     };
 
-    // ✅ Supply WETH
+    // Supply WETH
     const handleSupplyWeth = async () => {
         if (!signer) return toast.error("Wallet not connected");
         if (!amountWeth) return toast.error("Enter an amount");
@@ -183,7 +180,7 @@ export default function Main() {
         const weiAmount = ethers.parseEther(amountWeth);
 
         try {
-            // 2️⃣ Approve Aave pool
+            // Approve Aave pool
             setStepWeth("approving");
             toast.loading("Approving Aave Pool...");
             const weth = new ethers.Contract(wethAddress, IWeth_abi.abi, signer);
@@ -192,7 +189,7 @@ export default function Main() {
             toast.dismiss();
             toast.success("Approval successful");
 
-            // 3️⃣ Supply to Aave
+            // Supply to Aave
             setStepWeth("supplying");
             toast.loading("Supplying to Aave...");
             const pool = new ethers.Contract(poolAddress, IPool_abi.abi, signer);
@@ -213,7 +210,7 @@ export default function Main() {
         }
     };
 
-    // ✅ Withdraw logic
+    // Withdraw WETH
     const handleWithraw = async () => {
         if (!signer) return toast.error("Wallet not connected");
         if (!amountWithraw) return toast.error("Enter an amount");
@@ -223,7 +220,7 @@ export default function Main() {
         // Withdraw
         try {
             setStepWithraw("withdrawing");
-            toast.loading("Withdrawing ETH...");
+            toast.loading("Withdrawing WETH...");
             const pool = new ethers.Contract(poolAddress, IPool_abi.abi, signer);
             const withdrawTx = await pool.withdraw(wethAddress, weiAmount, address);
             await withdrawTx.wait(1);
@@ -233,6 +230,7 @@ export default function Main() {
             setStepWithraw("idle");
             setAmountWithraw("");
             fetchBalances();
+            fetchUserData();
         } catch (err) {
             console.log("Withrawal failed:", err);
             toast.dismiss();
@@ -241,12 +239,12 @@ export default function Main() {
         }
     };
 
-    // ✅Borrow USDC
+    // Borrow USDC
     const handleBorrowUsdc = async () => {
         if (!signer) return toast.error("Wallet not connected");
         if (!amountBorrowUsdc) return toast.error("Enter an amount");
 
-        const usdcAmount = ethers.parseEther(amountBorrowUsdc);
+        const usdcAmount = ethers.parseUnits(amountBorrowUsdc, 6);
 
         // Borrow
         try {
@@ -261,6 +259,7 @@ export default function Main() {
             setStepBorrowUsdc("idle");
             setAmountBorrowUsdc("");
             fetchBalances();
+            fetchUserData();
         } catch (err) {
             console.log("Borrow failed:", err);
             toast.dismiss();
@@ -269,7 +268,36 @@ export default function Main() {
         }
     };
 
-    // ✅Borrow LINK
+    // Repay USDC
+    const handleRepayUsdc = async () => {
+        if (!signer) return toast.error("Wallet not connected");
+        if (!amountRepayUsdc) return toast.error("Enter an amount");
+
+        const usdcAmount = ethers.parseUnits(amountRepayUsdc, 6);
+
+        // Repay
+        try {
+            setStepRepayUsdc("repaying");
+            toast.loading("Repaying USDC...");
+            const pool = new ethers.Contract(poolAddress, IPool_abi.abi, signer);
+            const repayTx = await pool.repay(usdcAddress, usdcAmount, 2, address);
+            await repayTx.wait(1);
+
+            toast.dismiss();
+            toast.success("Repay successful!");
+            setStepRepayUsdc("idle");
+            setAmountRepayUsdc("");
+            fetchBalances();
+            fetchUserData();
+        } catch (err) {
+            console.log("Repay failed:", err);
+            toast.dismiss();
+            toast.error("Transaction failed");
+            setStepRepayUsdc("idle");
+        }
+    };
+
+    // Borrow LINK
     const handleBorrowLink = async () => {
         if (!signer) return toast.error("Wallet not connected");
         if (!amountBorrowLink) return toast.error("Enter an amount");
@@ -298,7 +326,7 @@ export default function Main() {
         }
     };
 
-    // ✅Repay LINK
+    // Repay LINK
     const handleRepayLink = async () => {
         if (!signer) return toast.error("Wallet not connected");
         if (!amountRepayLink) return toast.error("Enter an amount");
@@ -345,7 +373,7 @@ export default function Main() {
                     <div>
                         <p className="text-gray-700">Health factor</p>
                         <p className="font-semibold text-xl">
-                            {userTotalDept > 0 ? Number(userHealthFactor).toFixed(2) : "∞"}
+                            {userTotalDept > 0.5 ? Number(userHealthFactor).toFixed(2) : "∞"}
                         </p>
                     </div>
                 </div>
@@ -378,10 +406,10 @@ export default function Main() {
                             {showFormWithraw && (
                                 <div className="fixed inset-0 flex items-center justify-center backdrop-blur-[3px]">
                                     <div className="p-6 rounded-2xl shadow-md bg-white max-w-sm w-full">
-                                        <h2 className="text-lg font-semibold mb-2">Withraw ETH</h2>
+                                        <h2 className="text-lg font-semibold mb-2">Withraw WETH</h2>
 
                                         <input
-                                            placeholder="Enter ETH amount"
+                                            placeholder="Enter WETH amount"
                                             value={amountWithraw}
                                             onChange={(e) => setAmountWithraw(e.target.value)}
                                             className="w-full border border-gray-300 rounded-lg p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-950"
@@ -492,7 +520,7 @@ export default function Main() {
                                         <h2 className="text-lg font-semibold mb-2">Supply WETH</h2>
 
                                         <input
-                                            placeholder="Enter ETH amount"
+                                            placeholder="Enter WETH amount"
                                             value={amountWeth}
                                             onChange={(e) => setAmountWeth(e.target.value)}
                                             className="w-full border border-gray-300 rounded-lg p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-950"
@@ -527,16 +555,57 @@ export default function Main() {
                         <p className="font-semibold text-center text-lg">Your borrows</p>
                         <div className="flex justify-between items-center pt-5">
                             <div className="">
-                                <img src="usdc.png" alt="Eth logo" width={25} className="inline-block" />
+                                <img src="usdc.png" alt="USDC logo" width={25} className="inline-block" />
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">USDC</span>
                             </div>
                             <div className="flex-col items-center justify-items-center">
-                                <p>0.00</p>
-                                <p className="text-gray-500 text-sm">$0.00</p>
+                                <p>{usdcDeptBalance ? Number(usdcDeptBalance * 1e12).toFixed(2) : "0.00"}</p>
+                                <p className="text-gray-500 text-sm">
+                                    ${usdcDeptBalance ? Number(usdcDeptBalance * 1e12).toFixed(2) : "0.00"}
+                                </p>
                             </div>
-                            <button className="w-22 h-8 bg-blue-950 text-white transition hover:bg-gray-500 rounded-lg">
-                                Repay
-                            </button>
+                            {!showFormRepayUsdc && (
+                                <button
+                                    onClick={() => setShowFormRepayUsdc(true)}
+                                    className="w-22 h-8 bg-blue-950 text-white transition hover:bg-gray-500 rounded-lg"
+                                >
+                                    Repay
+                                </button>
+                            )}
+
+                            {/* The section only shows after button is clicked */}
+                            {showFormRepayUsdc && (
+                                <div className="fixed inset-0 flex items-center justify-center backdrop-blur-[3px]">
+                                    <div className="p-6 rounded-2xl shadow-md bg-white max-w-sm w-full">
+                                        <h2 className="text-lg font-semibold mb-2">Repay USDC</h2>
+
+                                        <input
+                                            placeholder="Enter USDC amount"
+                                            value={amountRepayUsdc}
+                                            onChange={(e) => setAmountRepayUsdc(e.target.value)}
+                                            className="w-full border border-gray-300 rounded-lg p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-950"
+                                        />
+
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={handleRepayUsdc}
+                                                disabled={!amountRepayUsdc || stepRepayUsdc !== "idle"}
+                                                className="w-22 h-8 bg-blue-950 transition hover:bg-gray-500  text-white rounded-lg shadow disabled:opacity-50"
+                                            >
+                                                {stepRepayUsdc === "repaying" && "Repaying..."}
+                                                {stepRepayUsdc === "idle" && "Repay"}
+                                            </button>
+
+                                            <button
+                                                onClick={() => setShowFormRepayUsdc(false)}
+                                                className="w-22 h-8 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         <div className="flex justify-between items-center pt-3 pb-6 border-b-1  border-gray-300">
                             <div className="">
@@ -545,7 +614,7 @@ export default function Main() {
                             </div>
                             <div className="flex-col justify-items-center">
                                 <p>{linkDeptBalance ? Number(linkDeptBalance).toFixed(2) : "0.00"}</p>
-                                <p className="text-gray-500 text-sm">${Number(userTotalDept).toFixed(2)}</p>
+                                <p className="text-gray-500 text-sm">${Number(linkDeptBalance * 30).toFixed(2)}</p>
                             </div>
                             {/* Trigger button */}
                             {!showFormRepayLink && (
@@ -561,10 +630,10 @@ export default function Main() {
                             {showFormRepayLink && (
                                 <div className="fixed inset-0 flex items-center justify-center backdrop-blur-[3px]">
                                     <div className="p-6 rounded-2xl shadow-md bg-white max-w-sm w-full">
-                                        <h2 className="text-lg font-semibold mb-2">Repay Link</h2>
+                                        <h2 className="text-lg font-semibold mb-2">Repay LINK</h2>
 
                                         <input
-                                            placeholder="Enter Link amount"
+                                            placeholder="Enter LINK amount"
                                             value={amountRepayLink}
                                             onChange={(e) => setAmountRepayLink(e.target.value)}
                                             className="w-full border border-gray-300 rounded-lg p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-950"
@@ -668,10 +737,10 @@ export default function Main() {
                             {showFormBorrowLink && (
                                 <div className="fixed inset-0 flex items-center justify-center backdrop-blur-[3px]">
                                     <div className="p-6 rounded-2xl shadow-md bg-white max-w-sm w-full">
-                                        <h2 className="text-lg font-semibold mb-2">Borrow Link</h2>
+                                        <h2 className="text-lg font-semibold mb-2">Borrow LINK</h2>
 
                                         <input
-                                            placeholder="Enter Link amount"
+                                            placeholder="Enter LINK amount"
                                             value={amountBorrowLink}
                                             onChange={(e) => setAmountBorrowLink(e.target.value)}
                                             className="w-full border border-gray-300 rounded-lg p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-950"
