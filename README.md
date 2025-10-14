@@ -1,9 +1,7 @@
-# DeFi Liquidity Network UI (Under Development)
+# DeFi Liquidity Network UI
 
-![Status](https://img.shields.io/badge/status-under--development-yellow)
-
-This project is currently in active development 🚧  
-A user interface for a decentralized liquidity platform for lending, borrowing, and staking.
+A decentralized web application that allows users to supply, withdraw, borrow, and repay assets such as ETH, WETH, USDC, and LINK through Aave Protocol v3 smart contracts.
+This project is built with Next.js (React 18) and leverages ethers.js, wagmi, and RainbowKit for seamless wallet connectivity and blockchain interaction.
 
 ## 🚀 Overview
 
@@ -21,24 +19,24 @@ Users can:
 
 ## 🛠️ Tech Stack
 
-| Category              | Technologies                       |
-| --------------------- | ---------------------------------- |
-| **Frontend**          | Next.js, React                     |
-| **Blockchain / Web3** | Wagmi, Viem, Ethers.js, RainbowKit |
-| **Smart Contracts**   | Aave V3 Protocol (Sepolia Network) |
-| **Styling**           | Tailwind, React Hot Toast          |
+| Layer                 | Technologies                                      |
+| --------------------- | ------------------------------------------------- |
+| **Frontend**          | Next.js, TailwindCSS                              |
+| **Blockchain SDKs**   | Wagmi, Viem, Ethers.js, RainbowKit                |
+| **Smart Contracts**   | Aave V3 Protocol (Sepolia Network)                |
+| **Utilities**         | react-hot-toast for notifications                 |
+| **Wallets Supported** | MetaMask, Coinbase Wallet, WalletConnect, Rainbow |
 
-## ⚙️ Features (Current Progress)
+## ⚙️ Features
 
-| Feature                                                | Status         |
-| ------------------------------------------------------ | -------------- |
-| Connect wallet using RainbowKit                        | ✅ Done        |
-| Supply ETH to Aave Pool                                | ✅ Done        |
-| Supply WETH (wrapped ETH)                              | ✅ Done        |
-| Withdraw supplied assets                               | ✅ Done        |
-| Borrow functionality                                   | 🔜 In progress |
-| Real-time user dashboard (health factor, borrow limit) | 🔜 Coming soon |
-| UI redesign and responsiveness                         | 🔜 Coming soon |
+- Connect wallet using RainbowKit
+- Supply ETH to Aave Pool
+- Supply WETH (wrapped ETH)
+- Withdraw supplied assets
+- Borrow USDC or LINK using WETH collateral
+- Repay borrowed assets in full or in part
+- Real-time user dashboard (collateral, health factor)
+- Fetches and displays token balances dynamically for the connected wallet
 
 ### Clone the repository
 
@@ -59,14 +57,19 @@ yarn install
 yarn dev
 ```
 
-## 🧰 Development Notes
+## ⚡️ Future Improvements
 
-• Currently deployed and tested on Sepolia Testnet
+- Add support for multiple collateral assets
+- Responsive UI improvements
+- Integrate live token price feeds via Chainlink
+- Persistent user session state
 
-• Wrapped ETH (WETH) contract interactions are handled seamlessly within the UI
+## 💻 Author
 
-• Uses toast notifications for clear transaction feedback
+### Ndubuisi Ugwuja
 
-• Gas estimation and error handling are being optimized for production use
+[LinkedIn ↗](https://www.linkedin.com/in/ndubuisi-ugwuja-763135289/)
 
-### PLEASE FEEL FREE TO FORK AND CONTRIBUTE
+## 🪙 License
+
+#### This project is licensed under the MIT License.

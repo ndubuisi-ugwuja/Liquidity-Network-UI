@@ -6,9 +6,13 @@ import { useAccount, useWalletClient } from "wagmi";
 import { contractAddresses, IWeth_abi, IERC20_abi, IPool_abi } from "../constants";
 
 export default function Main() {
+    // Connect account
     const { address, isConnected } = useAccount();
     const { data: walletClient } = useWalletClient();
+    const [provider, setProvider] = useState(null);
+    const [signer, setSigner] = useState(null);
 
+    // Contract addresses
     const wethAddress = contractAddresses.wethTokenAddress;
     const aWethAddress = contractAddresses.aWethTokenAddress;
     const poolAddress = contractAddresses.poolAddress;
@@ -17,46 +21,53 @@ export default function Main() {
     const linkAddress = contractAddresses.linkTokenAddress;
     const linkDeptAddress = contractAddresses.linkDeptTokenAddress;
 
-    const [provider, setProvider] = useState(null);
-    const [signer, setSigner] = useState(null);
+    // Variables for connected account balances
     const [ethBalance, setEthBalance] = useState("0");
     const [wethBalance, setWethBalance] = useState("0");
     const [aWethBalance, setAWethBalance] = useState("0");
     const [linkDeptBalance, setLinkDeptBalance] = useState("0");
     const [usdcDeptBalance, setUsdcDeptBalance] = useState("0");
 
+    // User data variables
     const [userTotalColletaral, setUserTotalColletaral] = useState("0");
     const [userTotalDept, setUserTotalDept] = useState("0");
     const [userAvailableBorrows, setUserAvailableBorrows] = useState("0");
     const [userHealthFactor, setUserHealthFactor] = useState("0");
 
+    // ETH deposit variables
     const [amountEth, setAmountEth] = useState("");
     const [stepEth, setStepEth] = useState("idle");
-    const [showFormEth, setShowFormEth] = useState(false); // trigger state for ETH deposit
+    const [showFormEth, setShowFormEth] = useState(false);
 
+    // WETH deposit variables
     const [amountWeth, setAmountWeth] = useState("");
     const [stepWeth, setStepWeth] = useState("idle");
-    const [showFormWeth, setShowFormWeth] = useState(false); // trigger state for WETH deposit
+    const [showFormWeth, setShowFormWeth] = useState(false);
 
+    // WETH withdrawal variables
     const [amountWithraw, setAmountWithraw] = useState("");
     const [stepWithraw, setStepWithraw] = useState("idle");
-    const [showFormWithraw, setShowFormWithraw] = useState(false); // trigger state for withdrawal
+    const [showFormWithraw, setShowFormWithraw] = useState(false);
 
+    // USDC borrow variables
     const [amountBorrowUsdc, setAmountBorrowUsdc] = useState("");
     const [stepBorrowUsdc, setStepBorrowUsdc] = useState("idle");
-    const [showFormBorrowUsdc, setShowFormBorrowUsdc] = useState(false); // trigger state for Usdc borrow
+    const [showFormBorrowUsdc, setShowFormBorrowUsdc] = useState(false);
 
+    // USDC repay variables
     const [amountRepayUsdc, setAmountRepayUsdc] = useState("");
     const [stepRepayUsdc, setStepRepayUsdc] = useState("idle");
-    const [showFormRepayUsdc, setShowFormRepayUsdc] = useState(false); // trigger state for Usdc repay
+    const [showFormRepayUsdc, setShowFormRepayUsdc] = useState(false);
 
+    // LINK borrow variables
     const [amountBorrowLink, setAmountBorrowLink] = useState("");
     const [stepBorrowLink, setStepBorrowLink] = useState("idle");
-    const [showFormBorrowLink, setShowFormBorrowLink] = useState(false); // trigger state for LINK borrow
+    const [showFormBorrowLink, setShowFormBorrowLink] = useState(false);
 
+    // LINK repay variables
     const [amountRepayLink, setAmountRepayLink] = useState("");
     const [stepRepayLink, setStepRepayLink] = useState("idle");
-    const [showFormRepayLink, setShowFormRepayLink] = useState(false); // trigger state for LINK repay
+    const [showFormRepayLink, setShowFormRepayLink] = useState(false);
 
     // Get signer from RainbowKit/Wagmi connector
     useEffect(() => {
@@ -73,7 +84,7 @@ export default function Main() {
         setupSigner();
     }, [walletClient, isConnected]);
 
-    // Fetch balances (ETH + WETH)
+    // Fetch balances (ETH & WETH)
     const fetchBalances = async () => {
         if (!provider || !address) return;
 
@@ -126,7 +137,7 @@ export default function Main() {
         fetchUserData();
     }, [provider, address]);
 
-    // Supply logic using ethers.js
+    // Supply ETH
     const handleSupplyEth = async () => {
         if (!signer) return toast.error("Wallet not connected");
         if (!amountEth) return toast.error("Enter an amount");
