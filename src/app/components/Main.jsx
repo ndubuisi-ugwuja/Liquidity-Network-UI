@@ -267,6 +267,26 @@ export default function Main() {
             toast.dismiss();
             toast.success("Borrow successful");
 
+            // Automatically import USDC into your wallet
+            if (window.ethereum) {
+                try {
+                    await window.ethereum.request({
+                        method: "wallet_watchAsset",
+                        params: {
+                            type: "ERC20",
+                            options: {
+                                address: usdcAddress,
+                                symbol: "USDC",
+                                decimals: 6,
+                            },
+                        },
+                    });
+                    toast.success("USDC added to your wallet");
+                } catch (err) {
+                    toast.error("Could not add USDC to wallet");
+                }
+            }
+
             setStepBorrowUsdc("idle");
             setAmountBorrowUsdc("");
             fetchBalances();
@@ -334,6 +354,26 @@ export default function Main() {
             await borrowTx.wait(1);
             toast.dismiss();
             toast.success("Borrow successful");
+
+            // Automatically import LINK into your wallet
+            if (window.ethereum) {
+                try {
+                    await window.ethereum.request({
+                        method: "wallet_watchAsset",
+                        params: {
+                            type: "ERC20",
+                            options: {
+                                address: linkAddress,
+                                symbol: "LINK",
+                                decimals: 18,
+                            },
+                        },
+                    });
+                    toast.success("LINK added to your wallet");
+                } catch (err) {
+                    toast.error("Could not add LINK to wallet");
+                }
+            }
 
             setStepBorrowLink("idle");
             setAmountBorrowLink("");
