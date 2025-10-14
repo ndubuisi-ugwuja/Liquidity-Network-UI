@@ -168,9 +168,9 @@ export default function Main() {
             const pool = new ethers.Contract(poolAddress, IPool_abi.abi, signer);
             const supplyTx = await pool.supply(wethAddress, weiAmount, address, 0);
             await supplyTx.wait();
-
             toast.dismiss();
             toast.success("Supplied to Aave");
+
             setStepEth("idle");
             setAmountEth("");
             fetchBalances();
@@ -206,9 +206,9 @@ export default function Main() {
             const pool = new ethers.Contract(poolAddress, IPool_abi.abi, signer);
             const supplyTx = await pool.supply(wethAddress, weiAmount, address, 0);
             await supplyTx.wait();
-
             toast.dismiss();
             toast.success("Supplied to Aave");
+
             setStepWeth("idle");
             setAmountWeth("");
             fetchBalances();
@@ -235,9 +235,9 @@ export default function Main() {
             const pool = new ethers.Contract(poolAddress, IPool_abi.abi, signer);
             const withdrawTx = await pool.withdraw(wethAddress, weiAmount, address);
             await withdrawTx.wait(1);
-
             toast.dismiss();
             toast.success("Withrawal successful");
+
             setStepWithraw("idle");
             setAmountWithraw("");
             fetchBalances();
@@ -264,9 +264,9 @@ export default function Main() {
             const pool = new ethers.Contract(poolAddress, IPool_abi.abi, signer);
             const borrowTx = await pool.borrow(usdcAddress, usdcAmount, 2, 0, address);
             await borrowTx.wait(1);
-
             toast.dismiss();
             toast.success("Borrow successful");
+
             setStepBorrowUsdc("idle");
             setAmountBorrowUsdc("");
             fetchBalances();
@@ -288,14 +288,24 @@ export default function Main() {
 
         // Repay
         try {
+            // Approve repay
+            setStepRepayUsdc("approving");
+            toast.loading("Approving Aave Pool...");
+            const usdc = new ethers.Contract(usdcAddress, IERC20_abi.abi, signer);
+            const approveTx = await usdc.approve(poolAddress, usdcAmount);
+            await approveTx.wait(1);
+            toast.dismiss();
+            toast.success("Approval successful");
+
+            // Repay
             setStepRepayUsdc("repaying");
             toast.loading("Repaying USDC...");
             const pool = new ethers.Contract(poolAddress, IPool_abi.abi, signer);
             const repayTx = await pool.repay(usdcAddress, usdcAmount, 2, address);
             await repayTx.wait(1);
-
             toast.dismiss();
-            toast.success("Repay successful!");
+            toast.success("Repay successful");
+
             setStepRepayUsdc("idle");
             setAmountRepayUsdc("");
             fetchBalances();
@@ -322,9 +332,9 @@ export default function Main() {
             const pool = new ethers.Contract(poolAddress, IPool_abi.abi, signer);
             const borrowTx = await pool.borrow(linkAddress, linkAmount, 2, 0, address);
             await borrowTx.wait(1);
-
             toast.dismiss();
             toast.success("Borrow successful");
+
             setStepBorrowLink("idle");
             setAmountBorrowLink("");
             fetchBalances();
@@ -346,14 +356,24 @@ export default function Main() {
 
         // Repay
         try {
+            // Approve repay
+            setStepRepayLink("approving");
+            toast.loading("Approving Aave Pool...");
+            const link = new ethers.Contract(linkAddress, IERC20_abi.abi, signer);
+            const approveTx = await link.approve(poolAddress, linkAmount);
+            await approveTx.wait(1);
+            toast.dismiss();
+            toast.success("Approval successful");
+
+            // Repay
             setStepRepayLink("repaying");
             toast.loading("Repaying LINK...");
             const pool = new ethers.Contract(poolAddress, IPool_abi.abi, signer);
             const repayTx = await pool.repay(linkAddress, linkAmount, 2, address);
             await repayTx.wait(1);
-
             toast.dismiss();
             toast.success("Repay successful!");
+
             setStepRepayLink("idle");
             setAmountRepayLink("");
             fetchBalances();
@@ -603,6 +623,7 @@ export default function Main() {
                                                 disabled={!amountRepayUsdc || stepRepayUsdc !== "idle"}
                                                 className="w-22 h-8 bg-blue-950 transition hover:bg-gray-500  text-white rounded-lg shadow disabled:opacity-50"
                                             >
+                                                {stepRepayUsdc === "approving" && "Approving..."}
                                                 {stepRepayUsdc === "repaying" && "Repaying..."}
                                                 {stepRepayUsdc === "idle" && "Repay"}
                                             </button>
@@ -656,6 +677,7 @@ export default function Main() {
                                                 disabled={!amountRepayLink || stepRepayLink !== "idle"}
                                                 className="w-22 h-8 bg-blue-950 transition hover:bg-gray-500  text-white rounded-lg shadow disabled:opacity-50"
                                             >
+                                                {stepRepayLink === "approving" && "Approving..."}
                                                 {stepRepayLink === "repaying" && "Repaying..."}
                                                 {stepRepayLink === "idle" && "Repay"}
                                             </button>
