@@ -460,7 +460,7 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">WETH</span>
                             </div>
                             <div className="flex-col justify-items-center">
-                                <p>{aWethBalance ? Number(aWethBalance).toFixed(2) : "0.0000"}</p>
+                                <p>{aWethBalance ? Number(aWethBalance).toFixed(4) : "0.0000"}</p>
                                 <p className="text-gray-500 text-sm">${Number(userTotalColletaral).toFixed(2)}</p>
                             </div>
                             {/* Trigger button */}
@@ -514,7 +514,7 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-1">ETH</span>
                             </div>
                             <div className="flex-col justify-items-center">
-                                <p>{ethBalance ? Number(ethBalance).toFixed(2) : "0.0000"}</p>
+                                <p>{ethBalance ? Number(ethBalance).toFixed(4) : "0.0000"}</p>
                                 <p className="text-gray-500 text-sm">${Number(ethBalance * 4000).toFixed(2)}</p>
                             </div>
 
@@ -570,7 +570,7 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">WETH</span>
                             </div>
                             <div className="flex-col justify-items-center">
-                                <p>{wethBalance ? Number(wethBalance).toFixed(2) : "0.0000"}</p>
+                                <p>{wethBalance ? Number(wethBalance).toFixed(4) : "0.0000"}</p>
                                 <p className="text-gray-500 text-sm">${Number(wethBalance * 4000).toFixed(2)}</p>
                             </div>
 
@@ -630,7 +630,7 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">USDC</span>
                             </div>
                             <div className="flex-col items-center justify-items-center">
-                                <p>{usdcDeptBalance ? Number(usdcDeptBalance * 1e12).toFixed(2) : "0.00"}</p>
+                                <p>{usdcDeptBalance ? Number(usdcDeptBalance * 1e12).toFixed(4) : "0.0000"}</p>
                                 <p className="text-gray-500 text-sm">
                                     ${usdcDeptBalance ? Number(usdcDeptBalance * 1e12).toFixed(2) : "0.00"}
                                 </p>
@@ -685,7 +685,7 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">LINK</span>
                             </div>
                             <div className="flex-col justify-items-center">
-                                <p>{linkDeptBalance ? Number(linkDeptBalance).toFixed(2) : "0.00"}</p>
+                                <p>{linkDeptBalance ? Number(linkDeptBalance).toFixed(4) : "0.0000"}</p>
                                 <p className="text-gray-500 text-sm">${Number(linkDeptBalance * 30).toFixed(2)}</p>
                             </div>
                             {/* Trigger button */}
@@ -740,7 +740,7 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">USDC</span>
                             </div>
                             <div className="flex-col items-center justify-items-center">
-                                <p>{Number(userAvailableBorrows).toFixed(2)}</p>
+                                <p>{Number(userAvailableBorrows).toFixed(4)}</p>
                                 <p className="text-gray-500 text-sm">${Number(userAvailableBorrows).toFixed(2)}</p>
                             </div>
                             {/* Trigger button */}
@@ -793,7 +793,7 @@ export default function Main() {
                                 <span className="inline-block align-middle text-sm font-semibold ml-2">LINK</span>
                             </div>
                             <div className="flex-col justify-items-center">
-                                <p>{Number(userAvailableBorrows / 30).toFixed(2)}</p>
+                                <p>{Number(userAvailableBorrows / 30).toFixed(4)}</p>
                                 <p className="text-gray-500 text-sm">${Number(userAvailableBorrows).toFixed(2)}</p>
                             </div>
                             {/* Trigger button */}
