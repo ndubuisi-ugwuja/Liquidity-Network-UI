@@ -294,7 +294,7 @@ export default function Main() {
         } catch (err) {
             console.log("Borrow failed:", err);
             toast.dismiss();
-            toast.error("USDC is depleted, borrow other assets");
+            toast.error("USDC is depleted, borrow other assets!");
             setStepBorrowUsdc("idle");
         }
     };
@@ -382,7 +382,7 @@ export default function Main() {
         } catch (err) {
             console.log("Borrow failed:", err);
             toast.dismiss();
-            toast.error("Transaction failed");
+            toast.error("LINK is depleted, borrow other assets!");
             setStepBorrowLink("idle");
         }
     };
