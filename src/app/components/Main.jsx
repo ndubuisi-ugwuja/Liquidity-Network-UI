@@ -427,7 +427,7 @@ export default function Main() {
     };
 
     return (
-        <div className="flex-col">
+        <div className="flex-col mt-3">
             <div className="relative bottom-12">
                 <div className="flex gap-1 items-center">
                     <img src="/eth-blue.png" alt="Eth logo" width={28} />
