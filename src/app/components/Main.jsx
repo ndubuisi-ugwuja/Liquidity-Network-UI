@@ -451,7 +451,7 @@ export default function Main() {
             </div>
 
             <div className="relative bottom-3 flex flex-col sm:flex-row gap-8">
-                <section className="border-1 border-gray-300 rounded-lg w-135 h-100">
+                <section className="border-1 border-gray-300 rounded-lg w-[540px] h-[400px]">
                     <div className="pt-7 pl-10 pr-10">
                         <p className="font-semibold text-center text-lg">Your supplies</p>
                         <div className="flex justify-between items-center pt-5 pb-6 border-b-1  border-gray-300">
@@ -621,7 +621,7 @@ export default function Main() {
                         </div>
                     </div>
                 </section>
-                <section className="border-1 border-gray-300 rounded-lg w-135 h-100">
+                <section className="border-1 border-gray-300 rounded-lg w-[540px] h-[400px]">
                     <div className="pt-7 pl-10 pr-10">
                         <p className="font-semibold text-center text-lg">Your borrows</p>
                         <div className="flex justify-between items-center pt-5">
