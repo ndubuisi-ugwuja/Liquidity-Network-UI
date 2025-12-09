@@ -294,7 +294,7 @@ export default function Main() {
         } catch (err) {
             console.log("Borrow failed:", err);
             toast.dismiss();
-            toast.error("Transaction failed");
+            toast.error("USDC is depleted, borrow other assets");
             setStepBorrowUsdc("idle");
         }
     };
